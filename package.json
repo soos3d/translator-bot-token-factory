@@ -1,0 +1,25 @@
+{
+  "name": "translator-bot-token-factory",
+  "version": "1.0.0",
+  "description": "Migrating a production Telegram translation bot to Nebius Token Factory — the diff, the model comparison, the notes.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "translate": "tsx examples/translate.ts",
+    "compare": "tsx comparison/run.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "openai": "^5.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0"
+  }
+}
