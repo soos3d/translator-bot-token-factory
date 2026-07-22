@@ -9,7 +9,8 @@ import { stripThinking, translate, type TranslationResult } from '../src/transla
 
 // Prices are hand-copied and WILL drift. Re-check before trusting the cost column.
 const PRICES_DATE = '2026-07-21'
-const PRICES_SOURCE = 'https://tokenfactory.nebius.com/organization/prices'
+const PRICES_SOURCE =
+  'https://openrouter.ai/provider/nebius (Nebius provider listing; verify against the console prices page)'
 
 interface ModelConfig {
   id: string
@@ -20,10 +21,10 @@ interface ModelConfig {
 
 const MODELS: ModelConfig[] = [
   {
-    id: 'deepseek-ai/DeepSeek-R1-0528',
-    tier: 'large / reasoning',
-    inputPerMTok: 0.8, // TODO: confirm on prices page
-    outputPerMTok: 2.4 // TODO: confirm on prices page
+    id: 'deepseek-ai/DeepSeek-V4-Pro',
+    tier: 'large / flagship',
+    inputPerMTok: 1.75,
+    outputPerMTok: 3.5
   },
   {
     id: 'Qwen/Qwen3-32B',
@@ -32,10 +33,10 @@ const MODELS: ModelConfig[] = [
     outputPerMTok: 0.3
   },
   {
-    id: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
-    tier: 'small',
-    inputPerMTok: 0.03, // TODO: confirm on prices page
-    outputPerMTok: 0.09 // TODO: confirm on prices page
+    id: 'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B',
+    tier: 'small / cheap',
+    inputPerMTok: 0.06,
+    outputPerMTok: 0.24
   }
 ]
 
@@ -138,7 +139,7 @@ function buildResultsMarkdown(allRuns: Map<string, RunResult[]>, messages: Messa
     '|---|---|---|---|---|---|---|',
     ...summaryRows,
     '',
-    'Note: DeepSeek-R1 output includes reasoning tokens — hidden from the chat reply but fully billed.',
+    'Note: some models think before answering — reasoning tokens are hidden from the chat reply but fully billed.',
     '',
     `## Prices used (as of ${PRICES_DATE})`,
     '',

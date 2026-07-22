@@ -4,7 +4,7 @@ import { client } from './client.js'
 // translations into the other two group languages, in a fixed Telegram-ready
 // format. Streaming, with timing + token usage captured for the comparison.
 
-export const DEFAULT_MODEL = 'Qwen/Qwen3-32B'
+export const DEFAULT_MODEL = 'deepseek-ai/DeepSeek-V4-Pro'
 
 const SYSTEM_PROMPT = `You are the translation engine of a Telegram group chat where people write in English, Italian and Portuguese.
 

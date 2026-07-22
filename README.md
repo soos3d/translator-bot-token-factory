@@ -20,15 +20,13 @@ That's the whole migration. The bot's handlers, prompts, streaming, and token ac
 
 I ran the bot's core translate call over 10 real-shaped group messages (slang and idioms included — that's where translation models actually differ) across three price tiers. Full output with per-message verdicts: [comparison/results.md](comparison/results.md).
 
-<!-- TODO: paste summary table from comparison/results.md after the committed run -->
+| Model | Tier | Median TTFT | Median total | Avg tokens out/msg | Cost / 1k messages | Verdict |
+|---|---|---|---|---|---|---|
+| `deepseek-ai/DeepSeek-V4-Pro` | large / flagship | 726 ms | 1700 ms | 59 | $0.43 | **Best quality and fastest — the one I run** |
+| `Qwen/Qwen3-32B` | mid | 305 ms | 10406 ms | 402 | $0.13 | **Solid but slow (thinking mode) and stumbles on idioms** |
+| `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` | small / cheap | 5504 ms | 5974 ms | 688 | $0.17 | **Cheap on paper, literal in practice** |
 
-| Model | Tier | Median latency | Cost / 1k messages | Verdict |
-|---|---|---|---|---|
-| `deepseek-ai/DeepSeek-R1-0528` | large / reasoning | _pending run_ | _pending run_ | _pending_ |
-| `Qwen/Qwen3-32B` | mid | _pending run_ | _pending run_ | _pending_ |
-| `meta-llama/Meta-Llama-3.1-8B-Instruct` | small | _pending run_ | _pending run_ | _pending_ |
-
-<!-- TODO: "which one I'd actually run" paragraph after reviewing translations -->
+**The one I'd actually run: `deepseek-ai/DeepSeek-V4-Pro`** — and not for the reason I expected. The flagship turned out to be the *fastest* option, because it's the only one of the three that doesn't burn hundreds of reasoning tokens before answering — Qwen3-32B and Nemotron think so much that the real cost gap collapses to $0.13–0.17 vs $0.43 per 1,000 messages. It's also the only one translating idiom-for-idiom: "it's not rocket science" became *"não é bicho de sete cabeças"*, while Qwen translated "lol" literally as *"rido"* and Nemotron slipped a Spanish word into a Portuguese line. For a real-time group chat, ~3× the price for ~6× less latency and clearly better slang is an easy call at these absolute numbers.
 
 Latency and tokens are measured; quality verdicts are my own judgment (native Italian speaker, fluent in Portuguese) — a human eval, stated as such.
 
@@ -47,11 +45,11 @@ npm run translate -- 'in bocca al lupo per il colloquio!'
 You'll see the translation stream in, followed by timing and token usage:
 
 ```
-🇬🇧 good luck with the interview!
 🇮🇹 in bocca al lupo per il colloquio!
-🇧🇷 boa sorte na entrevista!
+🇬🇧 Break a leg for your interview!
+🇧🇷 Boa sorte na entrevista!
 
-⏱  first token 837 ms · total 4034 ms · 128 in / 358 out tokens
+⏱  first token 945 ms · total 1394 ms · 122 in / 38 out tokens
 ```
 
 Try a different model with `npm run translate -- --model meta-llama/Llama-3.3-70B-Instruct "no way, really?"`.
@@ -78,7 +76,10 @@ comparison/
 
 ## Notes from the migration
 
-Everything I noticed — signup friction, docs gaps, pleasant surprises — is in [NOTES.md](NOTES.md).
+- **The OpenAI compatibility is real.** Streaming, usage reporting via `stream_options`, error shapes — the official Node SDK worked without touching anything except the client constructor.
+- **No public models/pricing page.** The model list lives behind the API (`GET /v1/models`) and prices behind the console login, so you can't price out a workload before signing up — and there's no stable URL to cite prices from, which is why [comparison/results.md](comparison/results.md) date-stamps them.
+- **The catalog rotates fast.** The model used in the official quickstart (`deepseek-ai/DeepSeek-R1-0528`) was no longer in the catalog when I ran the comparison. `comparison/run.ts` preflights every model ID against `/v1/models` and prints the live catalog if one is missing — expect churn and pin accordingly.
+- **Watch out for reasoning tokens.** Several catalog models think before answering; those tokens are invisible in a chat reply but fully billed, and for short translations they can dominate the cost.
 
 ## What I'd try next
 
